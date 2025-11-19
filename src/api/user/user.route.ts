@@ -1,3 +1,4 @@
+import { privyAuth } from "@shared/middlewares/privyAuth";
 import { validator } from "@shared/middlewares/validator";
 import { asyncWrapper } from "@shared/utils/asyncWrapper";
 import express from "express";
@@ -10,11 +11,13 @@ const userRoute = express.Router();
 userRoute.post(
     "/sign-up",
     validator({ body: userSignUpSchema }),
+    privyAuth,
     asyncWrapper(userController.signUp),
 );
 userRoute.post(
     "/sign-in",
     validator({ body: userSignInSchema }),
+    privyAuth,
     asyncWrapper(userController.signIn),
 );
 

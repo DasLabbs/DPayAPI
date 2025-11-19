@@ -5,6 +5,8 @@ import healthCheckRouter from "./healthCheck/healthCheck.route";
 import networkRoute from "./network/network.route";
 import orderRoutes from "./order/order.route";
 import productRoute from "./product/product.route";
+import qrRouter from "./qr/qr.route";
+import transactionRouter from "./transaction/transaction.router";
 import userRoute from "./user/user.route";
 import walletRoutes from "./wallet/wallet.route";
 
@@ -17,5 +19,7 @@ router.use("/currencies", currencyRoute);
 router.use("/products", productRoute);
 router.use("/orders", orderRoutes);
 router.use("/wallets", walletRoutes);
+router.use("/qr", qrRouter);
+router.use("/transactions", transactionRouter);
 
 export default router;

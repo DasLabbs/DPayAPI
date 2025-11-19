@@ -11,14 +11,14 @@ export class UserController {
     async signUp(req: Request) {
         const context = extractContext(req);
         const dto = extractRequest<UserSignUpDto>(req, "body");
-        return await userService.signUp(context, dto);
+        return userService.signUp(context, dto);
     }
 
     @OkResponse()
     async signIn(req: Request) {
         const context = extractContext(req);
         const dto = extractRequest<UserSignInDto>(req, "body");
-        return await userService.signIn(context, dto);
+        return userService.signIn(context, dto);
     }
 }
 

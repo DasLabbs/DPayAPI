@@ -5,6 +5,7 @@ import type { StringValue } from "ms";
 export type JwtPayload = {
     userId: string;
     roleId: string;
+    userAddress: string;
 };
 
 export class Jwt {

@@ -15,6 +15,8 @@ export type CreateOrderDto = {
     userId: ObjectId;
     productId: ObjectId;
     quantity: number;
+    qrPayload: string;
+    txHash: string;
 };
 
 export type UpdateOrderDto = Partial<CreateOrderDto>;

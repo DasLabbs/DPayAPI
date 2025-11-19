@@ -1,11 +1,10 @@
-import { PrivateKeyPart, Wallet } from "@domain/entity";
-import { verifyPassword } from "@shared/helper/encrypt";
+import { Wallet } from "@domain/entity";
 import { BaseService } from "@shared/lib/base/service";
 import { RequestContext } from "@shared/lib/context";
 import { BadRequestError } from "@shared/lib/http/httpError";
 
 import privateKeyPartsService from "./privateKeyParts/privateKeyParts.service";
-import { CreateWalletDto, ExportWalletDto, GetWalletsDto } from "./wallet.dto";
+import { CreateWalletDto, GetWalletsDto } from "./wallet.dto";
 import walletManager from "./walletManager";
 
 export class WalletService extends BaseService {
@@ -60,42 +59,6 @@ export class WalletService extends BaseService {
         });
 
         return wallet;
-    }
-
-    async exportWallet(context: RequestContext, dto: ExportWalletDto) {
-        const { walletId, userId, password } = dto;
-        const user = await this.repos.user.model
-            .findOne({
-                _id: userId,
-            })
-            .populate({
-                path: "wallets",
-                populate: {
-                    path: "privateKeyPart",
-                    model: "PrivateKeyPart",
-                },
-            })
-            .lean()
-            .catch((error) => this.handleError(context, error));
-
-        if (!user) throw new BadRequestError("User not found");
-        const isValidPassword = await verifyPassword(password, user.password);
-        if (!isValidPassword) throw new BadRequestError("Invalid password");
-
-        const wallet = (user.wallets as Wallet[]).find(
-            (wallet) => wallet._id.toString() === walletId.toString(),
-        );
-        if (!wallet) throw new BadRequestError("Wallet not found");
-
-        const privateKey = await privateKeyPartsService.combinePrivateKeyParts({
-            parts: (wallet.privateKeyPart as PrivateKeyPart[]).map(
-                (part) => part.privateKey,
-            ),
-        });
-
-        return {
-            privateKey,
-        };
     }
 
     async getWallets(context: RequestContext, dto: GetWalletsDto) {

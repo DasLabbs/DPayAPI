@@ -14,9 +14,9 @@ export interface Config {
         refreshTokenSecretKey: string;
         refreshTokenExpiresIn: StringValue;
     };
-    eip712: {
-        message: string;
-        uri: string;
+    privy: {
+        appId: string;
+        appSecret: string;
     };
     redis: {
         host: string;
@@ -36,15 +36,15 @@ const envSchema = joi.object({
         .string()
         .valid(NodeEnv.DEV, NodeEnv.STAG, NodeEnv.PROD)
         .default(NodeEnv.DEV),
-    eip712: joi.object({
-        message: joi.string().default("Login to DPay"),
-        uri: joi.string().default("https://dpay.daslabs.io"),
-    }),
     jwt: joi.object({
         accessTokenSecretKey: joi.string().required(),
         accessTokenExpiresIn: joi.string().default("1h"),
         refreshTokenSecretKey: joi.string().required(),
         refreshTokenExpiresIn: joi.string().default("7d"),
+    }),
+    privy: joi.object({
+        appId: joi.string().required(),
+        appSecret: joi.string().required(),
     }),
     redis: joi.object({
         host: joi.string().default("localhost"),
@@ -69,6 +69,10 @@ const initConfig = () => {
                 refreshTokenSecretKey: process.env.REFRESH_TOKEN_SECRET_KEY,
                 refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
             },
+            privy: {
+                appId: process.env.PRIVY_APP_ID,
+                appSecret: process.env.PRIVY_APP_SECRET,
+            },
             redis: {
                 host: process.env.REDIS_HOST,
                 port: process.env.REDIS_PORT,
@@ -78,10 +82,6 @@ const initConfig = () => {
             },
             mongo: {
                 uri: process.env.MONGO_URI,
-            },
-            eip712: {
-                message: process.env.EIP712_MESSAGE,
-                uri: process.env.EIP712_URI,
             },
         },
         {

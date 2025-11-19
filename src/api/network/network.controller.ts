@@ -12,21 +12,21 @@ export class NetworkController {
     async getNetworks(req: Request) {
         const context = extractContext(req);
         const dto = extractRequest<PaginationDto>(req, "query");
-        return await networkService.getNetworks(context, dto);
+        return networkService.getNetworks(context, dto);
     }
 
     @OkResponse()
     async getNetwork(req: Request) {
         const context = extractContext(req);
         const dto = extractRequest<{ id: string }>(req, "params");
-        return await networkService.getNetwork(context, dto.id);
+        return networkService.getNetwork(context, dto.id);
     }
 
     @CreatedResponse()
     async createNetwork(req: Request) {
         const context = extractContext(req);
         const dto = extractRequest<CreateNetworkDto>(req, "body");
-        return await networkService.createNetwork(context, dto);
+        return networkService.createNetwork(context, dto);
     }
 
     @OkResponse()
@@ -34,14 +34,14 @@ export class NetworkController {
         const context = extractContext(req);
         const param = extractRequest<{ id: string }>(req, "params");
         const dto = extractRequest<UpdateNetworkDto>(req, "body");
-        return await networkService.updateNetwork(context, param.id, dto);
+        return networkService.updateNetwork(context, param.id, dto);
     }
 
     @OkResponse()
     async softDeleteNetwork(req: Request) {
         const context = extractContext(req);
         const param = extractRequest<{ id: string }>(req, "params");
-        return await networkService.softDeleteNetwork(context, param.id);
+        return networkService.softDeleteNetwork(context, param.id);
     }
 }
 

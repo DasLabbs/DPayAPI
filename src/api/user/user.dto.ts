@@ -1,10 +1,7 @@
 export type UserSignUpDto = {
-    username: string;
-    password: string;
-    isInitWallet: boolean;
+    address: string;
 };
 
 export type UserSignInDto = {
-    username: string;
-    password: string;
+    address: string;
 };

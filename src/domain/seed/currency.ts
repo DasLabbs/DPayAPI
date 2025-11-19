@@ -17,10 +17,10 @@ export const createCurrencies = async (context: RequestContext) => {
             decimals: 6,
         },
         {
-            address: "0x0000000000000000000000000000000000000002",
+            address: "0xfC8301BDcb62ca9Ec97BD5BFd647f7e11AfBEf4a",
             name: "Tether USD",
             symbol: "USDT",
-            decimals: 6,
+            decimals: 18,
         },
     ];
 
