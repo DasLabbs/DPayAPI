@@ -4,9 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "${PORT}:${PORT}"
     volumes:
       - ./logs:/app/logs
     environment:
       - NODE_ENV=PROD
+    network_mode: host
