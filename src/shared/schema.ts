@@ -3,9 +3,9 @@ import Joi from "joi";
 import { Types } from "mongoose";
 
 export const page = Joi.number().min(1).default(1);
-export const limit = Joi.number().min(5).max(30).default(30);
+export const limit = Joi.number().min(1).max(30).default(30);
 export const sort = Joi.string().valid("DESC", "ASC").default("DESC");
-export const orderBy = Joi.string().default("createdAt");
+export const orderBy = Joi.string().default("updatedAt");
 
 export const positiveNumber = Joi.number().greater(0).default(1);
 export const negativeNumber = Joi.number().less(0).default(-1);

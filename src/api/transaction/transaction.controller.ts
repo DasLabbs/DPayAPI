@@ -19,11 +19,11 @@ export class TransactionController {
     @OkResponse()
     async getTransactions(req: Request) {
         const context = extractContext(req);
-        const { userAddress } = extractRequest<JwtPayload>(req, "user");
+        const { userId } = extractRequest<JwtPayload>(req, "user");
         const paginateDto = extractRequest<PaginationDto>(req, "query");
 
         return transactionService.getTransactions(context, {
-            userAddress,
+            userId,
             ...paginateDto,
         });
     }

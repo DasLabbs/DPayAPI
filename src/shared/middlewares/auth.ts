@@ -1,17 +1,14 @@
 import { UserModel } from "@domain/entity";
-import { LinkedAccountEmbeddedWallet } from "@privy-io/node";
+import { User } from "@privy-io/node";
 import { UnauthorizedError } from "@shared/lib/http/httpError";
 import lodash from "lodash";
 import { NextFunction, Request, Response } from "express";
 
 export const auth = async (req: Request, _: Response, next: NextFunction) => {
-    const userPrivy = lodash.get(req, "privyUser") as
-        | { linked_accounts: LinkedAccountEmbeddedWallet[] }
-        | undefined;
-
+    const userPrivy = lodash.get(req, "privyUser") as unknown as User;
     if (!userPrivy) return next(new UnauthorizedError());
     const user = await UserModel.findOne({
-        address: userPrivy.linked_accounts[0].address,
+        privyUserId: userPrivy.id,
     });
 
     if (!user) {
@@ -20,7 +17,7 @@ export const auth = async (req: Request, _: Response, next: NextFunction) => {
 
     lodash.set(req, "user", {
         userId: user._id,
-        address: user.address,
+        privyUserId: user.privyUserId,
         roleId: user.roleId,
     });
     next();

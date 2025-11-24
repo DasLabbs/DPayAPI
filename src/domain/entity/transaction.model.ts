@@ -7,6 +7,7 @@ import { Network } from "./network.model";
 export type TransactionStatus = "pending" | "confirmed" | "failed";
 
 export type Transaction = {
+    userId: Schema.Types.ObjectId | string;
     hash: string;
     from: string;
     to: string;
@@ -14,6 +15,8 @@ export type Transaction = {
     status: TransactionStatus;
     network: ObjectId | Network;
     gasUsed: number;
+    gasPrice: number;
+    totalFee?: number;
 } & BaseModel;
 
 export const TransactionSchema = new Schema<Transaction>(
@@ -22,6 +25,7 @@ export const TransactionSchema = new Schema<Transaction>(
         from: { type: String, required: false },
         to: { type: String, required: false },
         amount: { type: String, required: false },
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: false },
         status: {
             type: String,
             required: true,
@@ -33,6 +37,8 @@ export const TransactionSchema = new Schema<Transaction>(
             required: true,
         },
         gasUsed: { type: Number, required: false },
+        gasPrice: { type: Number, required: false },
+        totalFee: { type: Number, required: false },
         deletedAt: { type: Date, default: null },
     },
     {

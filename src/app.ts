@@ -1,6 +1,7 @@
 import router from "@api/app.route";
 import { handleError, handleNotFound } from "@shared/middlewares/errorHandler";
 import { requestTracker } from "@shared/middlewares/requestTracker";
+import cors from "cors";
 import morgan from "morgan";
 import express from "express";
 
@@ -10,6 +11,7 @@ import "@domain/seed";
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 app.use(requestTracker);
 
 morgan.token("request-time", () => {

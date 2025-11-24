@@ -1,13 +1,11 @@
 import networkService from "@api/network/network.service";
-import qrService from "@api/qr/qr.service";
 import { Network, Transaction, TransactionStatus } from "@domain/entity";
 import { FUND_TRANSFERRED_TOPIC, TRANSFER_EVENT_ABI } from "@shared/constant";
 import { decodeEvent } from "@shared/helper/eventParser";
-import { paginate } from "@shared/helper/paginate";
 import { BaseService } from "@shared/lib/base/service";
 import { RequestContext } from "@shared/lib/context";
 import { BadRequestError } from "@shared/lib/http/httpError";
-import { ethers, TransactionReceipt } from "ethers";
+import { TransactionReceipt } from "ethers";
 
 import { CreateTransactionDto, GetTransactionsDto } from "./transaction.dto";
 
@@ -23,7 +21,7 @@ export class TransactionService extends BaseService {
         const decodedEvent = decodeEvent<{
             token: string;
             from: string;
-            amount: bigint;
+            value: bigint;
         }>(transferLog[0], TRANSFER_EVENT_ABI);
 
         return decodedEvent;
@@ -42,8 +40,9 @@ export class TransactionService extends BaseService {
                 const txReceipt = await provider.waitForTransaction(
                     txHash,
                     1,
-                    30,
+                    300000,
                 );
+
                 if (!txReceipt) {
                     retryTime++;
                     continue;
@@ -58,12 +57,15 @@ export class TransactionService extends BaseService {
                     from: txReceipt.from,
                     to: txReceipt.to!,
                     token: transferEvent.token,
-                    amount: transferEvent.amount.toString(),
+                    amount: transferEvent.value,
                     status: txStatus,
                     network: network._id,
                     gasUsed: Number(txReceipt.gasUsed),
+                    gasPrice: Number(txReceipt.gasPrice),
+                    totalFee: Number(txReceipt.fee),
                 };
-            } catch {
+            } catch (error) {
+                console.log("Error while getting transaction receipt:", error);
                 retryTime++;
             }
         }
@@ -76,6 +78,7 @@ export class TransactionService extends BaseService {
         dto: CreateTransactionDto,
     ) {
         const { chainId, txHash } = dto;
+        const user = context.jwtPayload;
         const network = await this.repos.network.findOne(context, {
             chainId,
         });
@@ -85,6 +88,7 @@ export class TransactionService extends BaseService {
             hash: txHash,
             network: network._id,
             status: "pending",
+            userId: user?.userId,
         })) as Transaction;
 
         const transaction = await this.getConfirmedTransaction(
@@ -96,15 +100,16 @@ export class TransactionService extends BaseService {
         const currency = await this.repos.currency.findOne(context, {
             address: transaction.token,
         });
-        if (!currency) throw new BadRequestError("Currency not found");
-        const parsedQr = await qrService.parseQRPayload(dto.qrPayload);
-        const formattedAmount = ethers.formatUnits(
-            transaction.amount,
-            currency.decimals,
-        );
 
-        if (formattedAmount !== parsedQr.amount)
-            throw new BadRequestError("Amount mismatch");
+        if (!currency) throw new BadRequestError("Currency not found");
+        // const parsedQr = await qrService.parseQRPayload(dto.qrPayload);
+        // const formattedAmount = ethers.formatUnits(
+        //     transaction.amount,
+        //     currency.decimals,
+        // );
+
+        // if (formattedAmount !== parsedQr.amount)
+        //     throw new BadRequestError("Amount mismatch");
 
         return this.repos.transaction.update(
             context,
@@ -114,10 +119,15 @@ export class TransactionService extends BaseService {
     }
 
     async getTransactions(context: RequestContext, dto: GetTransactionsDto) {
-        const transactions = await this.repos.transaction.find(context, {
-            from: dto.userAddress,
-        });
-        return paginate(transactions, dto);
+        const transactions = await this.repos.transaction.paginate(
+            context,
+            {
+                userId: dto.userId,
+            },
+            dto,
+        );
+
+        return transactions;
     }
 }
 

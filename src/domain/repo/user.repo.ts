@@ -16,7 +16,6 @@ export class UserRepo extends BaseRepo<User> {
         const user = await this.model
             .findOne(query)
             .populate("roleId")
-            .populate("wallets")
             .catch((error) => this.handleError(context, error, null));
         return user as User | null;
     }

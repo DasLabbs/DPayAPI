@@ -1,5 +1,5 @@
 export const CurrencyCode = {
-    USD: "978",
+    USD: "840",
     EUR: "978",
     VND: "704",
     SGD: "702",

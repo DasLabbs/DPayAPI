@@ -7,5 +7,5 @@ export type CreateTransactionDto = {
 };
 
 export type GetTransactionsDto = {
-    userAddress: string;
+    userId: string;
 } & PaginationDto;
