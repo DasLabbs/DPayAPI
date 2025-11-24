@@ -1,17 +1,14 @@
 # Base image
 FROM node:20-alpine
 
-# Set the working directory
-WORKDIR .
+# Set working directory
+WORKDIR /app
 
-# Copy only the package.json and yarn.lock for dependency installation
-COPY package.json yarn.lock ./
-
-# Install dependencies
-RUN yarn install 
-
-# Copy the rest of the application source code
+# Copy all source code first
 COPY . ./
+
+# Install dependencies (this will run postinstall script)
+RUN yarn install 
 
 # Build the TypeScript code
 RUN yarn run build
