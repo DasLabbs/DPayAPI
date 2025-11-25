@@ -31,6 +31,39 @@ export const CurrencyCode = {
     TZS: "834",
 };
 
+export const CurrencyCodeToName: Record<string, string> = {
+    "840": "USD",
+    "978": "EUR",
+    "704": "VND",
+    "702": "SGD",
+    "826": "GBP",
+    "756": "CHF",
+    "392": "JPY",
+    "410": "KRW",
+    "156": "CNY",
+    "356": "INR",
+    "986": "BRL",
+    "484": "MXN",
+    "032": "ARS",
+    "170": "COP",
+    "152": "CLP",
+    "604": "PEN",
+    "554": "NZD",
+    "344": "HKD",
+    "458": "MYR",
+    "608": "PHP",
+    "764": "THB",
+    "360": "IDR",
+    "949": "TRY",
+    "643": "RUB",
+    "980": "UAH",
+    "050": "BDT",
+    "566": "NGN",
+    "710": "ZAR",
+    "404": "KES",
+    "834": "TZS",
+};
+
 export const CountryCode = {
     US: "US",
     DE: "DE",
@@ -58,10 +91,7 @@ export const MerchantCategoryCode = {
     OTHER: "0008",
 };
 
-export const PointOfInitiationMethod = {
-    STATIC: "11",
-    DYNAMIC: "12",
-};
+export const PointOfInitiationMethod = { STATIC: "11", DYNAMIC: "12" };
 
 export const PayloadFormatIndicator = "01";
 

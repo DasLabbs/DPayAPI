@@ -1,4 +1,1 @@
-export type GenerateQRDto = {
-    amount: number;
-    currency: string;
-};
+export type GenerateQRDto = { amount: number; currency: string };

@@ -1,11 +1,12 @@
 import networkService from "@api/network/network.service";
+import qrService from "@api/qr/qr.service";
 import { Network, Transaction, TransactionStatus } from "@domain/entity";
 import { FUND_TRANSFERRED_TOPIC, TRANSFER_EVENT_ABI } from "@shared/constant";
 import { decodeEvent } from "@shared/helper/eventParser";
 import { BaseService } from "@shared/lib/base/service";
 import { RequestContext } from "@shared/lib/context";
 import { BadRequestError } from "@shared/lib/http/httpError";
-import { TransactionReceipt } from "ethers";
+import { ethers, TransactionReceipt } from "ethers";
 
 import { CreateTransactionDto, GetTransactionsDto } from "./transaction.dto";
 
@@ -79,9 +80,7 @@ export class TransactionService extends BaseService {
     ) {
         const { chainId, txHash } = dto;
         const user = context.jwtPayload;
-        const network = await this.repos.network.findOne(context, {
-            chainId,
-        });
+        const network = await this.repos.network.findOne(context, { chainId });
         if (!network) throw new BadRequestError("Network not found");
 
         const tx = (await this.repos.transaction.create(context, {
@@ -102,14 +101,22 @@ export class TransactionService extends BaseService {
         });
 
         if (!currency) throw new BadRequestError("Currency not found");
-        // const parsedQr = await qrService.parseQRPayload(dto.qrPayload);
-        // const formattedAmount = ethers.formatUnits(
-        //     transaction.amount,
-        //     currency.decimals,
-        // );
+        const parsedQr = await qrService.parseQRPayload(dto.qrPayload);
+        const formattedAmount = ethers.formatUnits(
+            transaction.amount,
+            currency.decimals,
+        );
 
-        // if (formattedAmount !== parsedQr.amount)
-        //     throw new BadRequestError("Amount mismatch");
+        // USDT, USDC include USD in the symbol - only support USD first
+        if (
+            !currency.symbol
+                .toUpperCase()
+                .includes(parsedQr.currency.toUpperCase())
+        )
+            throw new BadRequestError("Currency mismatch");
+
+        if (formattedAmount !== parsedQr.amount)
+            throw new BadRequestError("Amount mismatch");
 
         return this.repos.transaction.update(
             context,
@@ -121,9 +128,7 @@ export class TransactionService extends BaseService {
     async getTransactions(context: RequestContext, dto: GetTransactionsDto) {
         const transactions = await this.repos.transaction.paginate(
             context,
-            {
-                userId: dto.userId,
-            },
+            { userId: dto.userId },
             dto,
         );
 

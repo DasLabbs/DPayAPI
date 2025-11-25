@@ -1,7 +1,10 @@
 import {
     CountryCode,
     CurrencyCode,
+    CurrencyCodeToName,
     MerchantCategoryCode,
+    PayloadFormatIndicator,
+    PointOfInitiationMethod,
 } from "@shared/constant/qr";
 import { BaseService } from "@shared/lib/base/service";
 import { RequestContext } from "@shared/lib/context";
@@ -34,6 +37,8 @@ export class QRService extends BaseService {
         const merchantInfo = this.getDefaultMerchantInfo();
         const currencyCode = this.getCurrencyCode(dto.currency);
 
+        emvQr.setPointOfInitiationMethod(PointOfInitiationMethod.STATIC);
+        emvQr.setPayloadFormatIndicator(PayloadFormatIndicator);
         emvQr.setMerchantName(merchantInfo.merchantName);
         emvQr.setMerchantCity(merchantInfo.merchantCity);
         emvQr.setPostalCode(merchantInfo.postalCode);
@@ -44,9 +49,9 @@ export class QRService extends BaseService {
 
         const mai = EmvQr.Merchant.buildMerchantAccountInformation();
 
-        mai.setGloballyUniqueIdentifier("A000000727");
-        mai.addPaymentNetworkSpecific("01", "000697041801103143964403");
-        mai.addPaymentNetworkSpecific("02", "QRIBFTTA");
+        mai.setGloballyUniqueIdentifier("A000000727"); // FOR VIETNAM ONLY - Type of QR code
+        mai.addPaymentNetworkSpecific("01", "000697041801103143964403"); // HARD for testing - BIDV
+        mai.addPaymentNetworkSpecific("02", "QRIBFTTA"); // DEFAULT - QRIBFTTA
 
         emvQr.addMerchantAccountInformation("38", mai);
         return emvQr.generatePayload();
@@ -58,18 +63,15 @@ export class QRService extends BaseService {
 
         const parsedData = emvQr.rawData().split("\n");
         const amount = parsedData
-            .find((data) => data.startsWith("58"))!
+            .find((data) => data.startsWith("54"))!
             .split(" ")
             .at(-1)!;
-        const currency = parsedData
-            .find((data) => data.startsWith("59"))!
+        const currencyCode = parsedData
+            .find((data) => data.startsWith("53"))!
             .split(" ")
             .at(-1)!;
 
-        return {
-            amount,
-            currency,
-        };
+        return { amount, currency: CurrencyCodeToName[currencyCode] };
     }
 }
 
