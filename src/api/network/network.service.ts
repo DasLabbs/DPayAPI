@@ -47,7 +47,7 @@ export class NetworkService extends BaseService {
         );
     }
 
-    async getProvider(_: RequestContext, network: Network) {
+    getProvider(_: RequestContext, network: Network) {
         return new FallbackProvider(
             network.rpcUrls.map((rpcUrl) => new JsonRpcProvider(rpcUrl)),
             {

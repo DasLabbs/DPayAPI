@@ -6,6 +6,7 @@ import networkRoute from "./network/network.route";
 import orderRoutes from "./order/order.route";
 import productRoute from "./product/product.route";
 import qrRouter from "./qr/qr.route";
+import sseRouter from "./sse/sse.route";
 import transactionRouter from "./transaction/transaction.router";
 import userRoute from "./user/user.route";
 import walletRoutes from "./wallet/wallet.route";
@@ -21,5 +22,6 @@ router.use("/orders", orderRoutes);
 router.use("/wallets", walletRoutes);
 router.use("/qr", qrRouter);
 router.use("/transactions", transactionRouter);
+router.use("/sse", sseRouter);
 
 export default router;

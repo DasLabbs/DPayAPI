@@ -18,6 +18,7 @@ export interface Config {
         appId: string;
         appSecret: string;
     };
+    appUrl: string;
     redis: {
         host: string;
         port: number;
@@ -27,6 +28,9 @@ export interface Config {
     };
     mongo: {
         uri: string;
+    };
+    stripe: {
+        secretKey: string;
     };
 }
 
@@ -46,6 +50,7 @@ const envSchema = joi.object({
         appId: joi.string().required(),
         appSecret: joi.string().required(),
     }),
+    appUrl: joi.string().required(),
     redis: joi.object({
         host: joi.string().default("localhost"),
         port: joi.number().default(6379),
@@ -55,6 +60,9 @@ const envSchema = joi.object({
     }),
     mongo: joi.object({
         uri: joi.string().required(),
+    }),
+    stripe: joi.object({
+        secretKey: joi.string().required(),
     }),
 });
 
@@ -73,6 +81,7 @@ const initConfig = () => {
                 appId: process.env.PRIVY_APP_ID,
                 appSecret: process.env.PRIVY_APP_SECRET,
             },
+            appUrl: process.env.APP_URL ?? "http://localhost:3000",
             redis: {
                 host: process.env.REDIS_HOST,
                 port: process.env.REDIS_PORT,
@@ -82,6 +91,9 @@ const initConfig = () => {
             },
             mongo: {
                 uri: process.env.MONGO_URI,
+            },
+            stripe: {
+                secretKey: process.env.STRIPE_SECRET,
             },
         },
         {

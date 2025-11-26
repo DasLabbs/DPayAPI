@@ -7,19 +7,23 @@ export const decodeEvent = <T>(log: Log, abi: AbiItem[]) => {
 
     const abiDecoder = new AbiCoder();
 
-    const indexedDecoded = decodeIndexedEvent(log, indexedAbi, abiDecoder);
-    const nonIndexedDecoded = decodeNonIndexedEvent(
-        log,
-        nonIndexedAbi,
-        abiDecoder,
-    );
+    try {
+        const indexedDecoded = decodeIndexedEvent(log, indexedAbi, abiDecoder);
+        const nonIndexedDecoded = decodeNonIndexedEvent(
+            log,
+            nonIndexedAbi,
+            abiDecoder,
+        );
 
-    const event = {
-        ...indexedDecoded,
-        ...nonIndexedDecoded,
-    } as T;
+        const event = {
+            ...indexedDecoded,
+            ...nonIndexedDecoded,
+        } as T;
 
-    return event;
+        return event;
+    } catch {
+        return null;
+    }
 };
 
 const decodeIndexedEvent = (log: Log, abi: AbiItem[], abiDecoder: AbiCoder) => {

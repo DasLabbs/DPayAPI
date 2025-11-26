@@ -4,3 +4,5 @@ export type AbiItem = {
     name: string;
     type: string;
 };
+
+export type ObjectLiteral = Record<string, unknown>;

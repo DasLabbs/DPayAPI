@@ -1,3 +1,4 @@
+import { ObjectLiteral } from "@shared/ types";
 import { ObjectId } from "@shared/lib/mongoose/type";
 import { model, Schema } from "mongoose";
 
@@ -17,6 +18,7 @@ export type Transaction = {
     gasUsed: number;
     gasPrice: number;
     totalFee?: number;
+    stripePayment?: ObjectLiteral;
 } & BaseModel;
 
 export const TransactionSchema = new Schema<Transaction>(
@@ -39,6 +41,7 @@ export const TransactionSchema = new Schema<Transaction>(
         gasUsed: { type: Number, required: false },
         gasPrice: { type: Number, required: false },
         totalFee: { type: Number, required: false },
+        stripePayment: { type: Object, required: false },
         deletedAt: { type: Date, default: null },
     },
     {

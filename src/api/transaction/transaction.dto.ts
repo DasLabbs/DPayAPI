@@ -9,3 +9,8 @@ export type CreateTransactionDto = {
 export type GetTransactionsDto = {
     userId: string;
 } & PaginationDto;
+
+export type HandleStripePaymentDto = {
+    amount: number;
+    currency: string;
+};
