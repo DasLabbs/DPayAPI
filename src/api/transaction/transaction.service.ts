@@ -187,6 +187,7 @@ export class TransactionService extends BaseService {
             transactionId,
             stripePayment: stripePayment.id,
             ...onchainTransaction,
+            amount: onchainTransaction.amount.toString(),
         };
     }
 
