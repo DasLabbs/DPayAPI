@@ -115,9 +115,8 @@ export class TransactionService extends BaseService {
         if (!currency) throw new BadRequestError("Currency not supported");
 
         const parsedQr = await qrService.parseQRPayload(qrPayload);
-        const formattedAmount = ethers.formatUnits(
-            onchainTransaction.amount,
-            currency.decimals,
+        const formattedAmount = Number.parseFloat(
+            ethers.formatUnits(onchainTransaction.amount, currency.decimals),
         );
 
         // USDT, USDC include USD in the symbol - only support USD first
@@ -128,13 +127,16 @@ export class TransactionService extends BaseService {
         )
             throw new BadRequestError("Currency mismatch");
 
-        if (formattedAmount !== parsedQr.amount)
+        if (formattedAmount !== Number.parseFloat(parsedQr.amount))
             throw new BadRequestError("Amount mismatch");
 
         const transaction = await this.repos.transaction.update(
             context,
             transactionId,
-            onchainTransaction,
+            {
+                ...onchainTransaction,
+                formattedAmount,
+            },
         );
         if (!transaction)
             throw new BadRequestError("Transaction verification failed");
@@ -142,6 +144,7 @@ export class TransactionService extends BaseService {
         return {
             ...transaction,
             currency: parsedQr.currency,
+            formattedAmount,
         };
     }
 
@@ -168,7 +171,7 @@ export class TransactionService extends BaseService {
         );
 
         const stripePayment = await transactionStripe.handlePayment({
-            amount: Number(transaction.amount),
+            amount: transaction.formattedAmount,
             currency: transaction.currency.toLowerCase(),
         });
         sseService.emitEvent(context.privyUser!.id, {
@@ -181,7 +184,7 @@ export class TransactionService extends BaseService {
         });
 
         return {
-            transactionId: transaction._id.toString(),
+            transactionId,
             stripePayment: stripePayment.id,
         };
     }

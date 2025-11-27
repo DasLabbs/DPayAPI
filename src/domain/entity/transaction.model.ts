@@ -13,6 +13,7 @@ export type Transaction = {
     from: string;
     to: string;
     amount: string;
+    formattedAmount: number;
     status: TransactionStatus;
     network: ObjectId | Network;
     gasUsed: number;
@@ -27,6 +28,7 @@ export const TransactionSchema = new Schema<Transaction>(
         from: { type: String, required: false },
         to: { type: String, required: false },
         amount: { type: String, required: false },
+        formattedAmount: { type: Number, required: false },
         userId: { type: Schema.Types.ObjectId, ref: "User", required: false },
         status: {
             type: String,
