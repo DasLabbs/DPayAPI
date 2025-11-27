@@ -8,6 +8,7 @@ const userRoute = express.Router();
 userRoute.post("/sign-in", privyAuth, asyncWrapper(userController.signIn));
 userRoute.get(
     "/point-leaderboard",
+    privyAuth,
     asyncWrapper(userController.pointLeaderboard),
 );
 export default userRoute;
