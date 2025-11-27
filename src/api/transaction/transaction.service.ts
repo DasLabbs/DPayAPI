@@ -1,8 +1,10 @@
 import networkService from "@api/network/network.service";
 import notificationService from "@api/noti/noti.service";
 import qrService from "@api/qr/qr.service";
+import config from "@config/index";
 import { Network, Transaction, TransactionStatus } from "@domain/entity";
 import { FUND_TRANSFERRED_TOPIC, TRANSFER_EVENT_ABI } from "@shared/constant";
+import { REWARD_MANAGER_ABI } from "@shared/constant/abi";
 import { decodeEvent } from "@shared/helper/eventParser";
 import { BaseService } from "@shared/lib/base/service";
 import { RequestContext } from "@shared/lib/context";
@@ -29,6 +31,24 @@ export class TransactionService extends BaseService {
         }>(transferLog[0], TRANSFER_EVENT_ABI);
 
         return decodedEvent;
+    }
+
+    private async updateUserPoint(
+        context: RequestContext,
+        network: Network,
+        userAddress: string,
+    ) {
+        const provider = networkService.getProvider(context, network);
+        const rewardManager = new ethers.Contract(
+            config.contracts.rewardManager,
+            REWARD_MANAGER_ABI,
+            provider,
+        );
+
+        const userPoint = await rewardManager.userPoints(userAddress);
+        await this.repos.user.update(context, context.jwtPayload!.userId, {
+            point: userPoint,
+        });
     }
 
     private async getConfirmedTransaction(
@@ -94,8 +114,12 @@ export class TransactionService extends BaseService {
             txHash,
             network,
         );
+
         if (!confirmedTransaction)
             throw new BadRequestError("Transaction not found");
+        if (confirmedTransaction.to !== config.contracts.vault) {
+            throw new BadRequestError("Invalid transaction");
+        }
 
         return {
             transactionId: transaction._id.toString(),
@@ -177,6 +201,7 @@ export class TransactionService extends BaseService {
             onchainTransaction,
         );
 
+        await this.updateUserPoint(context, network, transaction.from);
         const stripePayment = await transactionStripe.handlePayment({
             amount: transaction.formattedAmount,
             currency: transaction.currency.toLowerCase(),

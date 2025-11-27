@@ -19,6 +19,10 @@ export interface Config {
         appSecret: string;
     };
     appUrl: string;
+    contracts: {
+        vault: string;
+        rewardManager: string;
+    };
     redis: {
         host: string;
         port: number;
@@ -45,6 +49,10 @@ const envSchema = joi.object({
         accessTokenExpiresIn: joi.string().default("1h"),
         refreshTokenSecretKey: joi.string().required(),
         refreshTokenExpiresIn: joi.string().default("7d"),
+    }),
+    contracts: joi.object({
+        vault: joi.string().required(),
+        rewardManager: joi.string().required(),
     }),
     privy: joi.object({
         appId: joi.string().required(),
@@ -82,6 +90,10 @@ const initConfig = () => {
                 appSecret: process.env.PRIVY_APP_SECRET,
             },
             appUrl: process.env.APP_URL ?? "http://localhost:3000",
+            contracts: {
+                vault: process.env.VAULT_CONTRACT_ADDRESS,
+                rewardManager: process.env.REWARD_MANAGER_CONTRACT_ADDRESS,
+            },
             redis: {
                 host: process.env.REDIS_HOST,
                 port: process.env.REDIS_PORT,

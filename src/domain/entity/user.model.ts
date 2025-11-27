@@ -9,6 +9,7 @@ export type User = {
     privyUserId: string;
     isKYCVerified: boolean;
     roleId: ObjectId | Role;
+    point: number;
 } & BaseModel;
 
 export const UserSchema = new Schema<User>(
@@ -22,6 +23,7 @@ export const UserSchema = new Schema<User>(
             ref: "Role",
             required: true,
         },
+        point: { type: Number, default: 0 },
     },
     {
         timestamps: true,

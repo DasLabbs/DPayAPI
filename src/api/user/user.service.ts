@@ -36,6 +36,27 @@ export class UserService extends BaseService {
             ...privyUser,
         };
     }
+
+    async pointLeaderboard(context: RequestContext) {
+        const users = await this.repos.user.find(context, {});
+        const sortedUsers = users
+            .sort((a, b) => b.point - a.point)
+            .map((user, i) => {
+                return {
+                    ...user,
+                    rank: i + 1,
+                };
+            });
+
+        const currentUser = sortedUsers.find(
+            (user) => user.privyUserId === context.privyUser?.id,
+        );
+
+        return {
+            leaderboard: sortedUsers.slice(0, 10),
+            currentUser,
+        };
+    }
 }
 
 const userService = new UserService();

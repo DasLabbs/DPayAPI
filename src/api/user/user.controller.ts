@@ -10,6 +10,12 @@ export class UserController {
         const context = extractContext(req);
         return userService.signIn(context);
     }
+
+    @OkResponse()
+    async pointLeaderboard(req: Request) {
+        const context = extractContext(req);
+        return userService.pointLeaderboard(context);
+    }
 }
 
 const userController = new UserController();
