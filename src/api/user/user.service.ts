@@ -48,16 +48,23 @@ export class UserService extends BaseService {
                     rank: i + 1,
                     userAddress: user.userAddress,
                     privyUserId: user.privyUserId,
+                    point: user.point,
                 };
             });
 
-        const currentUser = sortedUsers.find(
-            (user) => user.privyUserId === context.privyUser?.id,
-        );
+        const privyUserId = context.privyUser?.id;
+        if (privyUserId) {
+            const currentUser = sortedUsers.find(
+                (user) => user.privyUserId === context.privyUser?.id,
+            );
+            return {
+                leaderboard: sortedUsers.slice(0, 10),
+                currentUser,
+            };
+        }
 
         return {
             leaderboard: sortedUsers.slice(0, 10),
-            currentUser,
         };
     }
 }
