@@ -1,4 +1,5 @@
 import { User } from "@domain/entity";
+import { LinkedAccountEthereumEmbeddedWallet } from "@privy-io/node/resources";
 import { BaseService } from "@shared/lib/base/service";
 import { RequestContext } from "@shared/lib/context";
 import { BadRequestError } from "@shared/lib/http/httpError";
@@ -14,8 +15,7 @@ export class UserService extends BaseService {
             return {
                 userId: user._id.toString(),
                 privyUserId: user.privyUserId,
-                username: user.username,
-                ...privyUser,
+                userAddress: user.userAddress,
             };
 
         const role = await this.repos.role.findOne(context, {
@@ -25,15 +25,17 @@ export class UserService extends BaseService {
 
         const newUser: User = (await this.repos.user.create(context, {
             privyUserId: privyUser!.id,
-            username: "Main Account",
+            userAddress: (
+                privyUser!
+                    .linked_accounts[0] as LinkedAccountEthereumEmbeddedWallet
+            ).address,
             roleId: role._id,
         })) as User;
 
         return {
             userId: newUser._id.toString(),
             privyUserId: newUser.privyUserId,
-            username: newUser.username,
-            ...privyUser,
+            userAddress: newUser.userAddress,
         };
     }
 
@@ -43,8 +45,9 @@ export class UserService extends BaseService {
             .sort((a, b) => b.point - a.point)
             .map((user, i) => {
                 return {
-                    ...user,
                     rank: i + 1,
+                    userAddress: user.userAddress,
+                    privyUserId: user.privyUserId,
                 };
             });
 

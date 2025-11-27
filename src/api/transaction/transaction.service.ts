@@ -46,8 +46,9 @@ export class TransactionService extends BaseService {
         );
 
         const userPoint = await rewardManager.userPoints(userAddress);
+        const formattedUserPoint = Number(ethers.formatUnits(userPoint, 6));
         await this.repos.user.update(context, context.jwtPayload!.userId, {
-            point: userPoint,
+            point: formattedUserPoint,
         });
     }
 

@@ -1,6 +1,12 @@
 [
     {
-        "inputs": [],
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_vault",
+                "type": "address"
+            }
+        ],
         "stateMutability": "nonpayable",
         "type": "constructor"
     },
@@ -26,90 +32,79 @@
         "type": "error"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "target",
-                "type": "address"
-            }
-        ],
-        "name": "AddressEmptyCode",
+        "inputs": [],
+        "name": "ECDSAInvalidSignature",
         "type": "error"
     },
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "implementation",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "length",
+                "type": "uint256"
             }
         ],
-        "name": "ERC1967InvalidImplementation",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "ERC1967NonPayable",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "FailedCall",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "InvalidInitialization",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "NotInitializing",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            }
-        ],
-        "name": "SafeERC20FailedOperation",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "UUPSUnauthorizedCallContext",
+        "name": "ECDSAInvalidSignatureLength",
         "type": "error"
     },
     {
         "inputs": [
             {
                 "internalType": "bytes32",
-                "name": "slot",
+                "name": "s",
                 "type": "bytes32"
             }
         ],
-        "name": "UUPSUnsupportedProxiableUUID",
+        "name": "ECDSAInvalidSignatureS",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "x",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "y",
+                "type": "uint256"
+            }
+        ],
+        "name": "PRBMath_MulDiv18_Overflow",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "UD60x18",
+                "name": "x",
+                "type": "uint256"
+            }
+        ],
+        "name": "PRBMath_UD60x18_Exp2_InputTooBig",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "UD60x18",
+                "name": "x",
+                "type": "uint256"
+            }
+        ],
+        "name": "PRBMath_UD60x18_Log_InputTooSmall",
         "type": "error"
     },
     {
         "anonymous": false,
         "inputs": [
             {
-                "indexed": false,
-                "internalType": "uint64",
-                "name": "version",
-                "type": "uint64"
-            }
-        ],
-        "name": "Initialized",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
             {
                 "indexed": true,
                 "internalType": "address",
@@ -123,13 +118,95 @@
                 "type": "uint256"
             },
             {
-                "indexed": true,
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "nonce",
+                "type": "uint256"
             }
         ],
-        "name": "RewardClaimed",
+        "name": "ClaimExecuted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "oldValue",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newValue",
+                "type": "uint256"
+            }
+        ],
+        "name": "MinPointsToClaimUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "oldNonce",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newNonce",
+                "type": "uint256"
+            }
+        ],
+        "name": "NonceUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "points",
+                "type": "uint256"
+            }
+        ],
+        "name": "PointsAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "points",
+                "type": "uint256"
+            }
+        ],
+        "name": "PointsClaimed",
         "type": "event"
     },
     {
@@ -208,69 +285,6 @@
         "type": "event"
     },
     {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "depositor",
-                "type": "address"
-            }
-        ],
-        "name": "TokensDeposited",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            }
-        ],
-        "name": "TokensWithdrawn",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "implementation",
-                "type": "address"
-            }
-        ],
-        "name": "Upgraded",
-        "type": "event"
-    },
-    {
         "inputs": [],
         "name": "ADMIN_ROLE",
         "outputs": [
@@ -285,7 +299,7 @@
     },
     {
         "inputs": [],
-        "name": "CLAIMER_ROLE",
+        "name": "CLAIM_TYPEHASH",
         "outputs": [
             {
                 "internalType": "bytes32",
@@ -311,7 +325,7 @@
     },
     {
         "inputs": [],
-        "name": "TREASURY_ROLE",
+        "name": "DOMAIN_SEPARATOR",
         "outputs": [
             {
                 "internalType": "bytes32",
@@ -324,12 +338,51 @@
     },
     {
         "inputs": [],
-        "name": "UPGRADE_INTERFACE_VERSION",
+        "name": "POINTS_MANAGER_ROLE",
         "outputs": [
             {
-                "internalType": "string",
+                "internalType": "bytes32",
                 "name": "",
-                "type": "string"
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "POINTS_SCALE",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "SIGNER_ROLE",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "a",
+        "outputs": [
+            {
+                "internalType": "UD60x18",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -339,18 +392,103 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "token",
+                "name": "user",
                 "type": "address"
             },
             {
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "tradeAmount",
                 "type": "uint256"
+            }
+        ],
+        "name": "addPoint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "nonce",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "deadline",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct RewardManager.ClaimData[]",
+                "name": "claimsData",
+                "type": "tuple[]"
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                "internalType": "bytes[]",
+                "name": "signatures",
+                "type": "bytes[]"
+            }
+        ],
+        "name": "batchClaim",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "nonce",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "deadline",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct RewardManager.ClaimData",
+                "name": "claimData",
+                "type": "tuple"
+            },
+            {
+                "internalType": "bytes",
+                "name": "signature",
+                "type": "bytes"
             }
         ],
         "name": "claimReward",
@@ -362,18 +500,19 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "token",
+                "name": "",
                 "type": "address"
-            },
+            }
+        ],
+        "name": "claimedPoints",
+        "outputs": [
             {
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "",
                 "type": "uint256"
             }
         ],
-        "name": "depositTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -399,11 +538,11 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "token",
+                "name": "user",
                 "type": "address"
             }
         ],
-        "name": "getTokenBalance",
+        "name": "getUserNonce",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -457,26 +596,45 @@
         "type": "function"
     },
     {
-        "inputs": [
+        "inputs": [],
+        "name": "k",
+        "outputs": [
             {
-                "internalType": "address",
-                "name": "admin",
-                "type": "address"
+                "internalType": "UD60x18",
+                "name": "",
+                "type": "uint256"
             }
         ],
-        "name": "initialize",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [],
-        "name": "proxiableUUID",
+        "name": "minPointsToClaim",
         "outputs": [
             {
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "",
-                "type": "bytes32"
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "nonces",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -503,6 +661,19 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "resetClaimedPoints",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "bytes32",
                 "name": "role",
                 "type": "bytes32"
@@ -514,6 +685,19 @@
             }
         ],
         "name": "revokeRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "minPoints",
+                "type": "uint256"
+            }
+        ],
+        "name": "setMinPointsToClaim",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -538,14 +722,8 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "tokenBalances",
+        "inputs": [],
+        "name": "totalPoints",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -560,41 +738,32 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "newImplementation",
+                "name": "",
                 "type": "address"
-            },
-            {
-                "internalType": "bytes",
-                "name": "data",
-                "type": "bytes"
             }
         ],
-        "name": "upgradeToAndCall",
-        "outputs": [],
-        "stateMutability": "payable",
+        "name": "userPoints",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
-        "inputs": [
+        "inputs": [],
+        "name": "vault",
+        "outputs": [
             {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
+                "internalType": "contract RewardVault",
+                "name": "",
                 "type": "address"
             }
         ],
-        "name": "withdrawTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     }
 ]

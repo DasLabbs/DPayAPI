@@ -5,7 +5,7 @@ import { BaseModel } from "./base.model";
 import { Role } from "./role.model";
 
 export type User = {
-    username?: string;
+    userAddress?: string;
     privyUserId: string;
     isKYCVerified: boolean;
     roleId: ObjectId | Role;
@@ -15,7 +15,7 @@ export type User = {
 export const UserSchema = new Schema<User>(
     {
         privyUserId: { type: String, required: true },
-        username: { type: String, required: false },
+        userAddress: { type: String, required: false },
         deletedAt: { type: Date, default: null },
         isKYCVerified: { type: Boolean, default: false },
         roleId: {
