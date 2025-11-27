@@ -186,6 +186,7 @@ export class TransactionService extends BaseService {
         return {
             transactionId,
             stripePayment: stripePayment.id,
+            ...transaction,
         };
     }
 
