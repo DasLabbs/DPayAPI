@@ -1,12 +1,16 @@
 import { ObjectLiteral } from "@shared/ types";
+import { PaginationDto } from "@shared/interface";
+import { BaseService } from "@shared/lib/base/service";
+import { RequestContext } from "@shared/lib/context";
 import { Request, Response } from "express";
 
-export class SseService {
+export class NotificationService extends BaseService {
     private clients: Record<string, Response> = {};
     private clientLastActivity: Record<string, number> = {};
     private readonly heartbeatInterval: NodeJS.Timeout;
 
     constructor() {
+        super();
         this.heartbeatInterval = setInterval(() => {
             this.clearExpiredClients();
         }, 10000);
@@ -46,15 +50,25 @@ export class SseService {
     }
 
     public emitEvent(
-        clientId: string,
+        context: RequestContext,
         event: {
             type: string;
             data: ObjectLiteral;
         },
+        title: string,
+        message: string,
     ) {
-        const client = this.clients[clientId];
-        if (!client) return;
-        client.write(`data: ${JSON.stringify(event)}\n\n`);
+        const client = this.clients[context.privyUser!.id];
+        if (client) {
+            client.write(`data: ${JSON.stringify(event)}\n\n`);
+        }
+
+        this.repos.notification.create(context, {
+            userId: context.privyUser!.id,
+            title,
+            message,
+            data: event.data,
+        });
     }
 
     public extendClientHeartbeat(clientId: string) {
@@ -64,7 +78,37 @@ export class SseService {
     private removeClient(clientId: string) {
         delete this.clients[clientId];
     }
+
+    public markAsRead(context: RequestContext, notificationId?: string) {
+        if (notificationId) {
+            return this.repos.notification.update(context, notificationId, {
+                isRead: true,
+            });
+        }
+        return this.repos.notification.model.updateMany(
+            {
+                userId: context.privyUser!.id,
+                isRead: false,
+            },
+            {
+                isRead: true,
+            },
+        );
+    }
+
+    public getNotifications(
+        context: RequestContext,
+        paginationDto: PaginationDto,
+    ) {
+        return this.repos.notification.paginate(
+            context,
+            {
+                userId: context.privyUser!.id,
+            },
+            paginationDto,
+        );
+    }
 }
 
-const sseService = new SseService();
-export default sseService;
+const notificationService = new NotificationService();
+export default notificationService;

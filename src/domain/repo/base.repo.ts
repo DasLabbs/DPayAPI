@@ -27,6 +27,7 @@ export abstract class BaseRepo<T extends BaseModel> {
     async findById(context: RequestContext, id: string): Promise<T | null> {
         const item = await this.model
             .findById(id)
+            .lean()
             .catch((error) => this.handleError(context, error, null));
         return item as T | null;
     }
@@ -40,6 +41,7 @@ export abstract class BaseRepo<T extends BaseModel> {
                 deletedAt: { $eq: null },
                 ...query,
             })
+            .lean()
             .catch((error) => this.handleError(context, error, []));
         return items as T[];
     }
@@ -50,6 +52,7 @@ export abstract class BaseRepo<T extends BaseModel> {
     ): Promise<T | null> {
         const item = await this.model
             .findOne(query)
+            .lean()
             .catch((error) => this.handleError(context, error, null));
         return item as T | null;
     }
@@ -73,6 +76,7 @@ export abstract class BaseRepo<T extends BaseModel> {
             .findByIdAndUpdate(id, data, {
                 new: true,
             })
+            .lean()
             .catch((error) => this.handleError(context, error, null));
         return item as T | null;
     }
@@ -80,6 +84,7 @@ export abstract class BaseRepo<T extends BaseModel> {
     async softDelete(context: RequestContext, id: string): Promise<T | null> {
         const item = await this.model
             .findByIdAndUpdate(id, { deletedAt: new Date() }, { new: true })
+            .lean()
             .catch((error) => this.handleError(context, error, null));
         return item as T | null;
     }
@@ -87,6 +92,7 @@ export abstract class BaseRepo<T extends BaseModel> {
     async hardDelete(context: RequestContext, id: string): Promise<T | null> {
         const item = await this.model
             .findByIdAndDelete(id)
+            .lean()
             .catch((error) => this.handleError(context, error, null));
         return item as T | null;
     }
@@ -119,12 +125,14 @@ export abstract class BaseRepo<T extends BaseModel> {
                 .sort(sortOption)
                 .skip(skip)
                 .limit(limit)
+                .lean()
                 .catch((error) => this.handleError(context, error, [])),
             this.model
                 .countDocuments({
                     deletedAt: { $eq: null },
                     ...query,
                 })
+                .lean()
                 .catch((error) => this.handleError(context, error, 0)),
         ]);
 

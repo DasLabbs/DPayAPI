@@ -2,6 +2,7 @@ import currencyRepo from "./currency.repo";
 import kycRepo from "./kyc.repo";
 import kycLogRepo from "./kycLog.repo";
 import networkRepo from "./network.repo";
+import notificationRepo from "./noti.repo";
 import orderRepo from "./order.repo";
 import permissionRepo from "./permission.repo";
 import pointRepo from "./point.repo";
@@ -26,6 +27,7 @@ const appRepos = {
     role: roleRepo,
     permission: permissionRepo,
     point: pointRepo,
+    notification: notificationRepo,
 };
 
 export type AppRepos = typeof appRepos;

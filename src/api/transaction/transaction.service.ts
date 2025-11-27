@@ -1,6 +1,6 @@
 import networkService from "@api/network/network.service";
+import notificationService from "@api/noti/noti.service";
 import qrService from "@api/qr/qr.service";
-import sseService from "@api/sse/sse.service";
 import { Network, Transaction, TransactionStatus } from "@domain/entity";
 import { FUND_TRANSFERRED_TOPIC, TRANSFER_EVENT_ABI } from "@shared/constant";
 import { decodeEvent } from "@shared/helper/eventParser";
@@ -100,6 +100,7 @@ export class TransactionService extends BaseService {
         return {
             transactionId: transaction._id.toString(),
             onchainTransaction: confirmedTransaction,
+            network,
         };
     }
 
@@ -148,20 +149,26 @@ export class TransactionService extends BaseService {
         };
     }
 
+    // eslint-disable-next-line max-lines-per-function
     async submitTransaction(
         context: RequestContext,
         dto: CreateTransactionDto,
     ) {
-        const { transactionId, onchainTransaction } =
+        const { transactionId, onchainTransaction, network } =
             await this.handleOnchainTransaction(context, dto);
 
-        sseService.emitEvent(context.privyUser!.id, {
-            type: "transaction-receipt",
-            data: {
-                hash: onchainTransaction.hash,
-                status: onchainTransaction.status,
+        notificationService.emitEvent(
+            context,
+            {
+                type: "transaction-receipt",
+                data: {
+                    hash: onchainTransaction.hash,
+                    status: onchainTransaction.status,
+                },
             },
-        });
+            "Transaction Confirmed",
+            `Transaction ${onchainTransaction.hash} on ${network.name} has been confirmed`,
+        );
 
         const transaction = await this.verifyTransaction(
             context,
@@ -174,14 +181,19 @@ export class TransactionService extends BaseService {
             amount: transaction.formattedAmount,
             currency: transaction.currency.toLowerCase(),
         });
-        sseService.emitEvent(context.privyUser!.id, {
-            type: "stripe-payment",
-            data: {
-                paymentIntent: stripePayment.id,
-                hash: transaction.hash,
-                status: stripePayment.status,
+        notificationService.emitEvent(
+            context,
+            {
+                type: "stripe-payment",
+                data: {
+                    paymentIntent: stripePayment.id,
+                    hash: transaction.hash,
+                    status: stripePayment.status,
+                },
             },
-        });
+            "Transaction completed",
+            `Transaction ${transaction.formattedAmount} ${transaction.currency} has been completed`,
+        );
 
         return {
             transactionId,
