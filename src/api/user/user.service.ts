@@ -41,6 +41,22 @@ export class UserService extends BaseService {
         };
     }
 
+    async getProfile(context: RequestContext) {
+        const privyUser = context.privyUser;
+        const user = await this.repos.user.findOne(context, {
+            privyUserId: privyUser?.id,
+        });
+
+        if (!user) throw new BadRequestError("User not found");
+
+        return {
+            userId: user._id.toString(),
+            privyUserId: user.privyUserId,
+            userAddress: user.userAddress,
+            point: user.point || 0,
+        };
+    }
+
     async pointLeaderboard(context: RequestContext) {
         const users = await this.repos.user.find(context, {});
         const sortedUsers = users

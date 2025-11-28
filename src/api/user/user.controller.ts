@@ -16,6 +16,12 @@ export class UserController {
         const context = extractContext(req);
         return userService.pointLeaderboard(context);
     }
+
+    @OkResponse()
+    async getProfile(req: Request) {
+        const context = extractContext(req);
+        return userService.getProfile(context);
+    }
 }
 
 const userController = new UserController();

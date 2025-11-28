@@ -11,4 +11,5 @@ userRoute.get(
     privyAuth,
     asyncWrapper(userController.pointLeaderboard),
 );
+userRoute.get("/profile", privyAuth, asyncWrapper(userController.getProfile));
 export default userRoute;
