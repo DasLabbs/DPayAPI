@@ -16,6 +16,7 @@ export class UserService extends BaseService {
                 userId: user._id.toString(),
                 privyUserId: user.privyUserId,
                 userAddress: user.userAddress,
+                point: user.point || 0,
             };
 
         const role = await this.repos.role.findOne(context, {
@@ -36,6 +37,23 @@ export class UserService extends BaseService {
             userId: newUser._id.toString(),
             privyUserId: newUser.privyUserId,
             userAddress: newUser.userAddress,
+            point: newUser.point || 0,
+        };
+    }
+
+    async getProfile(context: RequestContext) {
+        const privyUser = context.privyUser;
+        const user = await this.repos.user.findOne(context, {
+            privyUserId: privyUser?.id,
+        });
+
+        if (!user) throw new BadRequestError("User not found");
+
+        return {
+            userId: user._id.toString(),
+            privyUserId: user.privyUserId,
+            userAddress: user.userAddress,
+            point: user.point || 0,
         };
     }
 
